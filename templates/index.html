@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Heart Disease Prediction</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .carousel {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: -1;
+      }
+
+      .carousel img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        animation: fade 15s infinite;
+      }
+
+      .carousel img:nth-child(2) {
+        animation-delay: 5s;
+      }
+
+      .carousel img:nth-child(3) {
+        animation-delay: 10s;
+      }
+
+      @keyframes fade {
+        0% {
+          opacity: 0;
+        }
+        33% {
+          opacity: 1;
+        }
+        66% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+
+      .login {
+        background: rgba(0, 0, 0, 0.8);
+        padding: 20px 40px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        text-align: center;
+        width: 100%;
+        max-width: 400px;
+      }
+
+      .login h1 {
+        color: #8a2be2;
+        font-size: 2em;
+        margin-bottom: 20px;
+      }
+
+      .login input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: none;
+        border-radius: 5px;
+        outline: none;
+        background: #1e293b;
+        color: #fff;
+        font-size: 1em;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+      .login button {
+        width: 100%;
+        padding: 10px;
+        background: #8a2be2;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        font-size: 1em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      }
+
+      .login button:hover {
+        background: #6a1fb8;
+      }
+
+      .login h4 {
+        color: #8a2be2;
+        margin-top: 20px;
+      }
+
+      input::placeholder {
+        color: #a9b3c1;
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const form = document.querySelector("form");
+        const predictionText = document.querySelector("h4");
+        const bikingInput = document.querySelector(
+          "input[name='percent biking']"
+        );
+        const smokingInput = document.querySelector(
+          "input[name='percent smoking']"
+        );
+
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          predictionText.textContent = "Loading prediction...";
+
+          const data = {
+            biking: bikingInput.value,
+            smoking: smokingInput.value,
+          };
+
+          try {
+            const response = await fetch("/predict", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+              throw new Error("Failed to fetch prediction");
+            }
+
+            const result = await response.json();
+            predictionText.textContent =
+              result.prediction_text || "Prediction received successfully!";
+          } catch (error) {
+            predictionText.textContent =
+              "Error fetching prediction. Please try again.";
+          }
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div class="carousel">
+      <img
+        src="https://internet-prod.nhlbi.nih.gov/sites/default/files/styles/16x9_crop/public/2022-07/Heart%20failure%20and%20gene%20shutterstock_1663310782.jpg?itok=e_jep-0c"
+        alt="Background Image 1"
+      />
+      <img
+        src="https://miro.medium.com/v2/resize:fit:678/0*g2HrJg3uosek8zF-.jpg"
+        alt="Background Image 2"
+      />
+      <img
+        src="https://media.licdn.com/dms/image/v2/D5612AQHe7vRE3UNj0w/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1693010842632?e=2147483647&v=beta&t=m5xNrVPUQ2bP2N2fKTNe69R2EDxTFs-syAr2i0JuwTE"
+        alt="Background Image 3"
+      />
+    </div>
+    <div class="login">
+      <h1>Heart Disease Prediction</h1>
+      <form>
+        <input
+          type="text"
+          name="percent biking"
+          placeholder="Percent population biking"
+          required="required"
+        /><br />
+        <input
+          type="text"
+          name="percent smoking"
+          placeholder="Percent population smoking"
+          required="required"
+        />
+        <p>
+          <button type="submit" class="btn btn-primary btn-block btn-large">
+            Predict Percent Population with Heart Disease
+          </button>
+        </p>
+      </form>
+      <br />
+      <h4>Enter values to predict the percentage of heart disease.</h4>
+    </div>
+  </body>
+</html>
